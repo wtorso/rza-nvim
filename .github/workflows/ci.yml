@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rza-nvim-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check out RZA source
+        uses: actions/checkout@v5
+        with:
+          repository: wtorso/rza
+          ref: 2634771a6c9fa4f7fb5491e368546fa09056596d
+          path: rza-source
+      - name: Install C3 0.8.5_1
+        shell: bash
+        run: |
+          mkdir --parents build/toolchain
+          curl -fL https://github.com/c3lang/c3c/releases/download/v0.8.5_1/c3-linux.tar.gz \
+            -o build/toolchain/c3.tar.gz
+          printf '%s  %s\n' \
+            '939135bc6fbe9d67bf3b19c08146b93ab10996718aafff692294ae6c0b3a3f88' \
+            build/toolchain/c3.tar.gz | sha256sum --check
+          tar -xzf build/toolchain/c3.tar.gz -C build/toolchain
+          printf '%s\n' "$PWD/build/toolchain/c3" >> "$GITHUB_PATH"
+          "$PWD/build/toolchain/c3/c3c" --version
+      - name: Install Neovim
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends neovim
+          nvim --version
+      - name: Build RZA compiler
+        shell: bash
+        run: cd rza-source && bash build_compiler.sh
+      - name: Syntax tests without a compiler
+        shell: bash
+        run: bash test/run.sh
+      - name: Syntax and LSP integration tests
+        shell: bash
+        run: RZA_COMPILER="$PWD/rza-source/build/bin/rez3asm" bash test/run.sh
+      - name: Hygiene
+        shell: bash
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain)"

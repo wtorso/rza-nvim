@@ -1,0 +1,19 @@
+layout Entry: key:i64, value:i64
+res entries, field, Entry[2]
+med entries_m, entries, field
+mov %r0, -42
+mov %r15, -0x8000000000000000
+store [entries_m + %r0].value, %r15
+load %r2, [entries_m + 0].key
+proc tick:
+ret
+; layout mov %r0
+mov %r16, 1
+layout Pair: tag:u8, signed:i8, half:u16, signed_half:i16
+res pair, field, Pair
+med pair_m, pair, field
+mov.i8 %r1, 0xff
+load.i8 %r2, [pair_m + 0].signed
+store.u8 [pair_m + 0].tag, %r2
+layout Word: signed:i32, tail:u32
+layout Wide: bits:u64
