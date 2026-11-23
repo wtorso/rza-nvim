@@ -51,6 +51,8 @@ end
 
 local first_id = open_and_check("test/fixtures/valid.rza", nil)
 local second_id = open_and_check("test/fixtures/lsp.rza", "unknown op bogus")
+local float_id = open_and_check("test/fixtures/float.rza", nil)
+check(first_id and first_id == float_id, "floating document must reuse the same client")
 check(first_id and first_id == second_id, "same-root files must reuse one client")
 check(#get_clients({ name = "rza" }) == 1, "expected one global rza client")
 

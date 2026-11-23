@@ -11,7 +11,8 @@ language rules.
 
 - Filetype detection and `; %s` comment configuration.
 - Highlighting for instructions, registers, layouts, fields, numbers, and comments.
-- All 172 active fixed-width integer operation/type spellings.
+- All 240 active fixed-width integer and floating-point operation/type spellings, including
+  strict f32/f64 conversions and bitcasts.
 - Optional diagnostics and standard Neovim LSP features through the real RZA language server.
 - No plugin manager, tree-sitter grammar, npm package, or external Lua dependency.
 

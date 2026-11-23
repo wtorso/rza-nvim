@@ -90,6 +90,36 @@ for _, opcode in ipairs({"shr.i8", "slt.i8", "ult.u8", "shr.i16", "slt.i16", "ul
 end
 check(#typed == 172, "typed matrix must contain 172 spellings")
 
+local floating = {}
+for _, base in ipairs({"mov", "load", "store", "add", "sub", "mul", "div",
+        "feq", "fne", "flt", "fle", "fgt", "fge"}) do
+    for _, type in ipairs({"f32", "f64"}) do
+        table.insert(floating, base .. "." .. type)
+    end
+end
+for _, float in ipairs({"f32", "f64"}) do
+    for _, type in ipairs(types) do
+        table.insert(floating, "cvt." .. float .. "." .. type)
+        table.insert(floating, "cvt." .. type .. "." .. float)
+    end
+end
+table.insert(floating, "cvt.f64.f32")
+table.insert(floating, "cvt.f32.f64")
+for _, pair in ipairs({{"f32", "i32", "u32"}, {"f64", "i64", "u64"}}) do
+    local float, signed, unsigned = pair[1], pair[2], pair[3]
+    for _, item in ipairs({"bitcast." .. float .. "." .. signed,
+            "bitcast." .. float .. "." .. unsigned,
+            "bitcast." .. signed .. "." .. float,
+            "bitcast." .. unsigned .. "." .. float}) do
+        table.insert(floating, item)
+    end
+end
+check(#floating == 68, "floating matrix must contain 68 spellings")
+for _, opcode in ipairs(floating) do
+    table.insert(typed, opcode)
+end
+check(#typed == 240, "typed matrix must contain 240 spellings")
+
 vim.cmd("enew")
 vim.api.nvim_buf_set_lines(0, 0, -1, true, typed)
 vim.cmd("runtime! syntax/rza.vim")
@@ -103,7 +133,9 @@ local inactive = {
     "shr.u8", "slt.u8", "ult.i8", "shr.u16", "slt.u16", "ult.i16",
     "shr.u32", "slt.u32", "ult.i32", "shr.u64", "slt.u64", "ult.i64",
     "ult", "loadb.u8", "loadb.u16", "loadb.u32", "loadb.u64",
-    "crc32c.i32", "print.i32", "cvt.i64", "cvt.u64", "add.f32", "add.f64",
+    "crc32c.i32", "print.i32", "cvt.i64", "cvt.u64", "mod.f32", "mod.f64",
+    "cadd.f32", "feq.i32", "cvt.f32.f32", "cvt.i32.i64", "bitcast.f64.u32",
+    "mov.f16", "load.bf16", "cvt.f16.f32",
 }
 vim.cmd("enew")
 vim.api.nvim_buf_set_lines(0, 0, -1, true, inactive)

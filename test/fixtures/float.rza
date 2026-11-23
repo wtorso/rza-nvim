@@ -1,0 +1,9 @@
+layout Pair: single:f32, double:f64
+res pair, field, Pair
+med pair_m, pair, field
+mov.f32 %r0, 0x3f800000
+add.f32 %r1, %r0, 0x40000000
+cvt.f64.f32 %r2, %r1
+bitcast.u64.f64 %r3, %r2
+store.f64 [pair_m + 0].double, %r3
+ret
