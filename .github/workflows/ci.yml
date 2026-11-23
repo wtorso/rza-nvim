@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: wtorso/rza
-          ref: 2634771a6c9fa4f7fb5491e368546fa09056596d
+          ref: 46071861d877a0c676b41e6a5024965b9ec73904
           path: rza-source
       - name: Install C3 0.8.5_1
         shell: bash
